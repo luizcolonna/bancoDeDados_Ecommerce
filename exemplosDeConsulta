@@ -1,0 +1,40 @@
+--  1) Quantos pedidos foram feitos por cada cliente:
+SELECT 
+    c.idClient,
+    c.Fname,
+    c.Lname,
+    COUNT(o.idOrder) AS total_pedidos
+FROM clients c
+LEFT JOIN orders o ON c.idClient = o.idOrderClient
+GROUP BY c.idClient, c.Fname, c.Lname;
+
+-- 2) Algum vendedor também é fornecedor:
+SELECT 
+    s.socialName AS nome_vendedor
+FROM seller s
+JOIN supplier f 
+    ON (s.cnpj IS NOT NULL AND s.cnpj = f.cnpj)
+    OR (s.cpf IS NOT NULL AND s.cpf = f.cnpj);
+
+-- 3) Relação de produtos, fornecedores e estoques:
+SELECT 
+    p.Pname AS produto,
+    f.socialName AS fornecedor,
+    ps.quantity AS quantidade_fornecida,
+    st.storageLocation AS local_estoque,
+    st.quantity AS quantidade_estoque
+FROM product p
+JOIN productSupplier ps ON ps.idPsProduct = p.idProduct
+JOIN supplier f ON f.idSupplier = ps.idPsSupplier
+LEFT JOIN storageLocation sl ON sl.idLproduct = p.idProduct
+LEFT JOIN productStorage st ON st.idProdStorage = sl.idLStorage;
+
+-- 4) Relação de nomes dos fornecedores e nomes dos produtos:
+SELECT 
+    f.socialName AS fornecedor,
+    p.Pname AS produto
+FROM productSupplier ps
+JOIN supplier f ON ps.idPsSupplier = f.idSupplier
+JOIN product p ON ps.idPsProduct = p.idProduct;
+
+
